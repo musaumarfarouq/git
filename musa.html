@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Girlfriend Day, Habiba!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* New Color Scheme: Deep Purple & Vibrant Pink */
+            --bg-color: #1a0b2e; 
+            --accent-color: #f72585; 
+            --text-main: #f8f9fa;
+            --text-muted: #adb5bd;
+            --card-bg: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-color), #090314);
+            color: var(--text-main);
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+        }
+
+        /* Screen Transitions */
+        .screen {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            text-align: center;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .screen.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        /* Lock Screen */
+        .lock-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--accent-color);
+        }
+        
+        .passkey-container {
+            margin-top: 30px;
+        }
+
+        input[type="password"] {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--accent-color);
+            color: white;
+            font-size: 2rem;
+            text-align: center;
+            width: 150px;
+            outline: none;
+            letter-spacing: 5px;
+            font-family: monospace;
+            margin-bottom: 20px;
+        }
+
+        button {
+            background: rgba(247, 37, 133, 0.2);
+            border: 1px solid var(--accent-color);
+            color: white;
+            padding: 10px 30px;
+            border-radius: 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Poppins', sans-serif;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: var(--accent-color);
+            box-shadow: 0 0 15px rgba(247, 37, 133, 0.5);
+        }
+
+        /* Loading Screen */
+        .pulse {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.7; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.7; }
+        }
+
+        /* Gallery Screen */
+        .gallery-container {
+            display: flex;
+            overflow-x: auto;
+            gap: 15px;
+            padding: 20px 0;
+            width: 100%;
+            scroll-snap-type: x mandatory;
+        }
+        
+        .gallery-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .gallery-item {
+            flex: 0 0 80%;
+            scroll-snap-align: center;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .gallery-item img, .gallery-item video {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Letter Screen */
+        .letter-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+            text-align: left;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .letter-card h2 {
+            color: var(--accent-color);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .letter-card p {
+            line-height: 1.6;
+            font-size: 0.95rem;
+            color: #ececec;
+        }
+        
+        .hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background Audio -->
+    <audio id="bg-music" src="sound.mp3" loop></audio>
+
+    <!-- 1. Lock Screen -->
+    <div id="screen-lock" class="screen active">
+        <div class="lock-icon">🔒</div>
+        <h2>LOCKED</h2>
+        <p class="hint">Hint: The year we became official (Try 2026)</p>
+        <div class="passkey-container">
+            <input type="password" id="passkey" maxlength="4" placeholder="••••">
+            <br>
+            <button onclick="checkPasskey()">Unlock</button>
+        </div>
+        <p id="error-msg" style="color: var(--accent-color); font-size: 0.8rem; margin-top: 10px; display: none;">Incorrect passkey, try again.</p>
+    </div>
+
+    <!-- 2. Loading Screen -->
+    <div id="screen-loading" class="screen">
+        <h1 class="pulse">🐼</h1>
+        <h3 class="pulse" style="margin-top: 10px; font-weight: 300;">Loading something special...</h3>
+    </div>
+
+    <!-- 3. Greeting Screen -->
+    <div id="screen-greeting" class="screen">
+        <h3 style="color: var(--accent-color); font-style: italic;">To My Favorite Person</h3>
+        <h1 style="font-size: 2.5rem; margin: 20px 0;">Happy<br>Girlfriends Day<br>Habiba 🎀</h1>
+        <p class="hint">I made a little something for you...</p>
+        <button onclick="nextScreen('screen-greeting', 'screen-gallery')" style="margin-top: 40px;">See Memories</button>
+    </div>
+
+    <!-- 4. Memories / Gallery Screen -->
+    <div id="screen-gallery" class="screen">
+        <h2 style="margin-bottom: 5px;">Our Memories</h2>
+        <p class="hint" style="margin-bottom: 20px;">Swipe to view &rarr;</p>
+        
+        <div class="gallery-container">
+            <!-- Replace the src URLs below with your own image links -->
+             <div class="gallery-item"><video src="vid 1.mp4" controls playsinline></video></div>
+             <div class="gallery-item"><video src="vid 2.mp4" controls playsinline></video></div>
+            <div class="gallery-item"><img src="img/img 1.jpg" alt="Memory 1"></div>
+            <div class="gallery-item"><img src="img/img 2.jpg" alt="Memory 2"></div>
+            <div class="gallery-item"><img src="img/img 3.jpg" alt="Memory 3"></div>
+             <div class="gallery-item"><img src="img/img 4.jpg" alt="Memory 3"></div>
+        </div>
+
+        <button onclick="nextScreen('screen-gallery', 'screen-letter')" style="margin-top: 30px;">A Letter For You</button>
+    </div>
+
+    <!-- 5. Final Letter Screen -->
+    <div id="screen-letter" class="screen">
+        <div class="letter-card">
+            <h2>JUST FOR YOU ✨</h2>
+            <h2>Habiba ❤️</h2> 
+            <br>Taking today to remind you just how special you are to me. You are the most beautiful part of my life, and I'm so lucky to call you mine. Your smile makes my days better, and being with you feels like home.<br><br>
+            I love you more than words can say.</p>
+        </div>
+        <button onclick="nextScreen('screen-letter', 'screen-greeting')">Restart ↺</button>
+    </div>
+
+    <script>
+        // Set your secret passkey here
+        const SECRET_PASSKEY = "2026";
+
+        function checkPasskey() {
+            const input = document.getElementById('passkey').value;
+            const errorMsg = document.getElementById('error-msg');
+            
+            if (input === SECRET_PASSKEY) {
+                errorMsg.style.display = 'none';
+                
+                // Play the background music!
+                const music = document.getElementById('bg-music');
+                music.play().catch(error => console.log("Audio play failed:", error));
+                
+                // Transition to loading screen
+                nextScreen('screen-lock', 'screen-loading');
+                
+                // Simulate loading for 3 seconds, then go to greeting
+                setTimeout(() => {
+                    nextScreen('screen-loading', 'screen-greeting');
+                }, 3000);
+            } else {
+                errorMsg.style.display = 'block';
+                document.getElementById('passkey').value = '';
+            }
+        }
+
+        function nextScreen(currentId, nextId) {
+            const currentScreen = document.getElementById(currentId);
+            const nextScreen = document.getElementById(nextId);
+
+            // Fade out current
+            currentScreen.style.opacity = '0';
+            
+            setTimeout(() => {
+                currentScreen.classList.remove('active');
+                currentScreen.style.display = 'none';
+                
+                // Prepare next screen
+                nextScreen.style.display = 'flex';
+                // Slight delay to allow display to process before fading in
+                setTimeout(() => {
+                    nextScreen.classList.add('active');
+                    nextScreen.style.opacity = '1';
+                }, 50);
+            }, 500); // Matches the CSS transition time
+        }
+    </script>
+</body>
+</html>
